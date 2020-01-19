@@ -9,6 +9,7 @@ import subprocess
 from serial import Serial, SerialException, PARITY_NONE, STOPBITS_ONE, EIGHTBITS
 import argparse
 import time
+from os import path
 
 
 def avrdude_passthrough():
@@ -22,9 +23,13 @@ def avrdude_passthrough():
         print("Error: no port supplied")
         sys.exit(1)
 
-    reset_avr(args[0].port)
-
-    count_sleep(2) # wait 2 second to ensure Arduino is ready
+    if path.exists(args[0].port):
+        reset_avr(args[0].port)
+        count_sleep(2) # wait 2 second to ensure Arduino is ready
+    else:
+        if not count_sleep(5, test_func=lambda: path.exists(args[0].port)):
+            print(f'Error: port {args[0].port} not present')
+            exit(1)
 
     avrdude_args = ['avrdude'] + args[1] + ["-P", args[0].port]
     try: # try to invoke avrdude passing all the options
@@ -52,14 +57,17 @@ def reset_avr(ser_port):
     ser.close()
 
 
-def count_sleep(seconds, increment=0.25):
+def count_sleep(seconds, increment=0.25, test_func=lambda: False):
     sleepytime = seconds
     print(f'wait {seconds} seconds', end='')
     while sleepytime > 0:
+        if test_func():
+            return True
         print('.', end='', flush=True)
         time.sleep(increment)
         sleepytime -= increment
     print('')
+    return False
 
 if __name__ == '__main__':
    exit(avrdude_passthrough())
