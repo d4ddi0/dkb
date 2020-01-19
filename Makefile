@@ -7,16 +7,16 @@ PORT=/dev/ttyACM0
 
 OBJS := main.o
 
-pr.hex: pr.elf
+dkb.hex: dkb.elf
 	$(OBJCOPY) -O ihex -R .eeeprom $< $@
 
-pr.elf: $(OBJS)
+dkb.elf: $(OBJS)
 	$(CC) -o $@ $^
 
-install: pr.hex
+install: dkb.hex
 	avrdude -F -V -c arduino -p ATMEGA32U4 -P ${PORT} -b 115200 -U flash:w:$<
 
 clean:
-	$(RM) pr.hex pr.elf $(OBJS)
+	$(RM) dkb.hex dkb.elf $(OBJS)
 
 .PHONY: install clean
