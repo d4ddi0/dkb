@@ -14,7 +14,7 @@ dkb.elf: $(OBJS)
 	$(CC) -o $@ $^
 
 install: dkb.hex
-	avrdude -F -V -c arduino -p ATMEGA32U4 -P ${PORT} -b 115200 -U flash:w:$<
+	./avrdude_wrap.py -c avr109 -P $(PORT) -p ATMEGA32U4 -b 57600 -U flash:w:$<
 
 clean:
 	$(RM) dkb.hex dkb.elf $(OBJS)
