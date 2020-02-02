@@ -25,8 +25,9 @@ def avrdude_passthrough():
 
     if path.exists(args[0].port):
         reset_avr(args[0].port)
-        count_sleep(2) # wait 2 second to ensure Arduino is ready
+        count_sleep(1.5) # wait 1.5 second to ensure Arduino is ready
     else:
+        print(f'{args[0].port} not found. Plug in or reset Microcontroller')
         if not count_sleep(5, test_func=lambda: path.exists(args[0].port)):
             print(f'Error: port {args[0].port} not present')
             exit(1)
